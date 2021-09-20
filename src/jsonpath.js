@@ -83,6 +83,7 @@ class NewError extends Error {
  * @property {boolean} [preventEval=false]
  * @property {PlainObject|GenericArray|null} [parent=null]
  * @property {string|null} [parentProperty=null]
+ * @property {string|null} [missingLeaves=null]
  * @property {JSONPathCallback} [callback]
  * @property {OtherTypeCallback} [otherTypeCallback] Defaults to
  *   function which throws on encountering `@other`
@@ -136,6 +137,7 @@ function JSONPath (opts, expr, obj, callback, otherTypeCallback) {
     this.preventEval = opts.preventEval || false;
     this.parent = opts.parent || null;
     this.parentProperty = opts.parentProperty || null;
+    this.missingLeaves = opts.missingLeaves || 'omit';
     this.callback = opts.callback || callback || null;
     this.otherTypeCallback = opts.otherTypeCallback ||
         otherTypeCallback ||
@@ -531,6 +533,20 @@ JSONPath.prototype._trace = function (
                 }
             }
         }
+    }
+    if (ret.length === 0 && this.missingLeaves !== 'omit') {
+        const retItem = {
+            hasArrExpr,
+            parent: parent[parentPropName],
+            parentProperty: loc,
+            path: [...path, loc]
+        };
+        if (this.missingLeaves === 'undefined') {
+            retItem.value = undefined;
+        } else if (this.missingLeaves === 'null') {
+            retItem.value = null;
+        }
+        return [retItem];
     }
     return ret;
 };

@@ -97,6 +97,13 @@ declare module 'jsonpath-plus' {
      */
     parentProperty?: null | any
     /**
+     * Can be case-insensitive form of "omit", "undefined" or "null" to determine respectively whether to 
+     * omit missing leaves or return undefined or null
+     *
+     * @default 'omit'
+     */
+     missingLeaves?: 'omit' | 'undefined' | 'null'
+    /**
      * If supplied, a callback will be called immediately upon retrieval of
      * an end point value.
      *
